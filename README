@@ -34,6 +34,9 @@ tar -xzf deepspeech-0.1.0-models.tar.gz
 5. Convert the .pb to a TensorFlow checkpoint file
 
 python3 make_checkpoint.py
+ERROR: The decoder library file does not exist. Make sure you have downloaded or built the native client binaries and pass the appropriate path to the binaries in the --decoder_library_path parameter.
+
+session_dump under models/
 
 6. Generate adversarial examples
 

@@ -23,7 +23,9 @@ tf.load_op_library = lambda x: x
 import DeepSpeech as DeepSpeech
 
 graph_def = GraphDef()
-loaded = graph_def.ParseFromString(open("models/saved_model.pb","rb").read())
+
+# TODO the model name has changed
+loaded = graph_def.ParseFromString(open("models/output_graph.pb","rb").read())
 
 with tf.Graph().as_default() as graph:
     new_input = tf.placeholder(tf.float32, [None, None, None],
@@ -42,7 +44,8 @@ with tf.Graph().as_default() as graph:
     # Now let's dump these weights into a new copy of the network.
     with tf.Session(graph=graph) as sess:
         # Sample sentetnce, to make sure we've done it right
-        mfcc = audiofile_to_input_vector("sample.wav", 26, 9)
+        # TODO i've substitutes this file
+        mfcc = audiofile_to_input_vector("LDC93S1.wav", 26, 9)
 
         # Okay, so this is ugly again.
         # We just want it to not crash.
