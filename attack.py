@@ -51,8 +51,8 @@ DeepSpeech.TrainingCoordinator.__init__ = lambda x: None
 DeepSpeech.TrainingCoordinator.start = lambda x: None
 
 
-from util.text import ctc_label_dense_to_sparse
-from tf_logits import get_logits
+# from util.text import ctc_label_dense_to_sparse # this is from Deepspeech\util\text
+from utils import *
 
 # These are the tokens that we're allowed to use.
 # The - token is special and corresponds to the epsilon
@@ -110,16 +110,16 @@ class Attack:
         # We set the new input to the model to be the abve delta
         # plus a mask, which allows us to enforce that certain
         # values remain constant 0 for length padding sequences.
-        self.new_input = new_input = self.apply_delta*mask + original
+        self.new_input = new_input = self.apply_delta*mask + original # the mask mainly for padding
 
         # We add a tiny bit of noise to help make sure that we can
         # clip our values to 16-bit integers and not break things.
         noise = tf.random_normal(new_input.shape,
-                                 stddev=2)
+                                 stddev=2) # TODO still don't understand
         pass_in = tf.clip_by_value(new_input+noise, -2**15, 2**15-1)
 
         # Feed this final value to get the logits.
-        self.logits = logits = get_logits(pass_in, lengths)
+        self.logits = logits = get_logits(pass_in, lengths) # b,?,26
 
         # And finally restore the graph to make the classifier
         # actually do something interesting.
@@ -127,12 +127,27 @@ class Attack:
         saver.restore(sess, "models/session_dump")
 
         # Choose the loss function we want -- either CTC or CW
+        # the issue of ours is, how to determine the target for each frame
+        # if we have to compute a margin loss for each frame
+        #===== how does ctc compute ====
+        # ctc is to compute the proba of target phrase, given a distribution which gives
+        # rise to different feasible alignment
         self.loss_fn = loss_fn
         if loss_fn == "CTC":
             target = ctc_label_dense_to_sparse(self.target_phrase, self.target_phrase_lengths, batch_size)
+            ##===============
+            print('self.target_phrase:{}'.format(self.target_phrase.shape))
+            print('self.target_phrase_lengths:{}'.format(self.target_phrase_lengths.shape))
+            print('target:{}'.format(target.shape))
+            ##===============
             
             ctcloss = tf.nn.ctc_loss(labels=tf.cast(target, tf.int32),
                                      inputs=logits, sequence_length=lengths)
+
+            ##==============
+            print('logits:{}'.format(logits))
+            print('lengths:{}'.format(lengths))
+            ##==============
 
             # Slight hack: an infinite l2 penalty means that we don't penalize l2 distortion
             # The code runs faster at a slight cost of distortion, and also leaves one less
@@ -155,7 +170,7 @@ class Attack:
         start_vars = set(x.name for x in tf.global_variables())
         optimizer = tf.train.AdamOptimizer(learning_rate)
 
-        grad,var = optimizer.compute_gradients(self.loss, [delta])[0]
+        grad,var = optimizer.compute_gradients(self.loss, [delta])[0] # its computing grads on delta
         self.train = optimizer.apply_gradients([(tf.sign(grad),var)])
         
         end_vars = tf.global_variables()
@@ -223,7 +238,7 @@ class Attack:
                     print("\n".join(res))
                     
                     # And here we print the argmax of the alignment.
-                    res2 = np.argmax(logits,axis=2).T
+                    res2 = np.argmax(logits,axis=2).T # b,frame => frame,b
                     res2 = ["".join(toks[int(x)] for x in y[:(l-1)//320]) for y,l in zip(res2,lengths)]
                     print("\n".join(res2))
 
@@ -350,6 +365,7 @@ def main():
                 finetune.append(list(wav.read(args.finetune[i])[1]))
 
         maxlen = max(map(len,audios))
+        # padded
         audios = np.array([x+[0]*(maxlen-len(x)) for x in audios])
         finetune = np.array([x+[0]*(maxlen-len(x)) for x in finetune])
 
@@ -364,7 +380,7 @@ def main():
                         l2penalty=args.l2penalty)
         deltas = attack.attack(audios,
                                lengths,
-                               [[toks.index(x) for x in phrase]]*len(audios),
+                               [[toks.index(x) for x in phrase]]*len(audios), # sequence of target indices for all audios
                                finetune)
 
         # And now save it to the desired output

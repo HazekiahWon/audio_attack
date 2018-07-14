@@ -51,7 +51,7 @@ DeepSpeech.TrainingCoordinator.start = lambda x: None
 
 
 from util.text import ctc_label_dense_to_sparse
-from tf_logits import get_logits
+from utils import get_logits
 
 # These are the tokens that we're allowed to use.
 # The - token is special and corresponds to the epsilon
