@@ -98,12 +98,21 @@ def get_logits(new_input, length, first=[]):
     empty_context = np.zeros((batch_size, 9, 26), dtype=np.float32)
     new_input_to_mfcc = compute_mfcc(new_input)[:, ::2]
     features = tf.concat((empty_context, new_input_to_mfcc, empty_context), 1)
+    ##=====================
+    print('new_input:{}'.format(new_input.shape))
+    print('new_input_to_mfcc:{}'.format(new_input_to_mfcc.shape))
+    print('empty_context:{}'.format(empty_context.shape))
+    print('features:{}'.format(features.shape))
+    ##=====================
 
     # 2. We get to see 9 frames at a time to make our decision,
     # so concatenate them together.
     features = tf.reshape(features, [new_input.get_shape()[0], -1])
+    print('features:{}'.format(features.shape))
     features = tf.stack([features[:, i:i+19*26] for i in range(0,features.shape[1]-19*26+1,26)],1)
+    print('features:{}'.format(features.shape))
     features = tf.reshape(features, [batch_size, -1, 19*26])
+    print('features:{}'.format(features.shape))
 
     # 3. Whiten the data
     mean, var = tf.nn.moments(features, axes=[0,1,2])
