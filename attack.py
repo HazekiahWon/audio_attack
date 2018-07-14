@@ -136,17 +136,17 @@ class Attack:
         if loss_fn == "CTC":
             target = ctc_label_dense_to_sparse(self.target_phrase, self.target_phrase_lengths, batch_size)
             ##===============
-            print('self.target_phrase:{}'.format(self.target_phrase.shape))
-            print('self.target_phrase_lengths:{}'.format(self.target_phrase_lengths.shape))
-            print('target:{}'.format(target.shape))
+            # print('self.target_phrase:{}'.format(self.target_phrase.shape))
+            # print('self.target_phrase_lengths:{}'.format(self.target_phrase_lengths.shape))
+            # print('target:{}'.format(target.shape))
             ##===============
             
             ctcloss = tf.nn.ctc_loss(labels=tf.cast(target, tf.int32),
                                      inputs=logits, sequence_length=lengths)
 
             ##==============
-            print('logits:{}'.format(logits))
-            print('lengths:{}'.format(lengths))
+            # print('logits:{}'.format(logits))
+            # print('lengths:{}'.format(lengths))
             ##==============
 
             # Slight hack: an infinite l2 penalty means that we don't penalize l2 distortion
@@ -256,6 +256,9 @@ class Attack:
                                                            self.logits, self.new_input,
                                                            self.train),
                                                           feed_dict)
+            ##==========================
+            print("logits:{}".format(logits))
+            ##==========================
                     
             # Report progress
             print("%.3f"%np.mean(cl), "\t", "\t".join("%.3f"%x for x in cl))
