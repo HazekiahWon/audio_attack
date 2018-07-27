@@ -119,7 +119,7 @@ class Attack:
         pass_in = tf.clip_by_value(new_input+noise, -2**15, 2**15-1)
 
         # Feed this final value to get the logits.
-        self.logits = logits = get_logits(pass_in, lengths) # b,?,26
+        self.logits = logits = get_logits(pass_in, lengths) # n_frame,b,29
 
         # And finally restore the graph to make the classifier
         # actually do something interesting.
@@ -136,7 +136,7 @@ class Attack:
         if loss_fn == "CTC":
             target = ctc_label_dense_to_sparse(self.target_phrase, self.target_phrase_lengths, batch_size)
             ##===============
-            # print('self.target_phrase:{}'.format(self.target_phrase.shape))
+            print('self.target_phrase:{}'.format(self.target_phrase.shape))
             # print('self.target_phrase_lengths:{}'.format(self.target_phrase_lengths.shape))
             # print('target:{}'.format(target.shape))
             ##===============
@@ -145,7 +145,7 @@ class Attack:
                                      inputs=logits, sequence_length=lengths)
 
             ##==============
-            # print('logits:{}'.format(logits))
+            print('logits:{}'.format(logits))
             # print('lengths:{}'.format(lengths))
             ##==============
 
@@ -257,7 +257,7 @@ class Attack:
                                                            self.train),
                                                           feed_dict)
             ##==========================
-            print("logits:{}".format(logits))
+            # print("logits:{}".format(logits))
             ##==========================
                     
             # Report progress

@@ -99,10 +99,10 @@ def get_logits(new_input, length, first=[]):
     new_input_to_mfcc = compute_mfcc(new_input)[:, ::2]
     features = tf.concat((empty_context, new_input_to_mfcc, empty_context), 1)
     ##=====================
-    print('new_input:{}'.format(new_input.shape)) # b,audio_len
-    print('new_input_to_mfcc:{}'.format(new_input_to_mfcc.shape)) # b,n_frame,26
-    print('empty_context:{}'.format(empty_context.shape)) # b,9,26
-    print('features:{}'.format(features.shape)) # b,9+n_frame+9,26
+    # print('new_input:{}'.format(new_input.shape)) # b,audio_len
+    # print('new_input_to_mfcc:{}'.format(new_input_to_mfcc.shape)) # b,n_frame,26
+    # print('empty_context:{}'.format(empty_context.shape)) # b,9,26
+    # print('features:{}'.format(features.shape)) # b,9+n_frame+9,26
     ##=====================
 
     # 2. We get to see 9 frames at a time to make our decision,
@@ -121,7 +121,7 @@ def get_logits(new_input, length, first=[]):
     # 4. Finally we process it with DeepSpeech
     logits = DeepSpeech.BiRNN(features, length, [0]*10)
 
-    return logits
+    return logits # n_frame,b,29
 
 # gather_nd is taken from https://github.com/tensorflow/tensorflow/issues/206#issuecomment-229678962
 #
