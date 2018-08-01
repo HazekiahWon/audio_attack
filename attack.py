@@ -136,7 +136,7 @@ class Attack:
         if loss_fn == "CTC":
             target = ctc_label_dense_to_sparse(self.target_phrase, self.target_phrase_lengths, batch_size)
             ##===============
-            print('self.target_phrase:{}'.format(self.target_phrase.shape))
+            # print('self.target_phrase:{}'.format(self.target_phrase.shape)) # 1,7
             # print('self.target_phrase_lengths:{}'.format(self.target_phrase_lengths.shape))
             # print('target:{}'.format(target.shape))
             ##===============
@@ -145,7 +145,7 @@ class Attack:
                                      inputs=logits, sequence_length=lengths)
 
             ##==============
-            print('logits:{}'.format(logits))
+            # print('logits:{}'.format(logits)) # frame,1,29
             # print('lengths:{}'.format(lengths))
             ##==============
 
