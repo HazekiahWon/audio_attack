@@ -3,7 +3,7 @@
 #include <tensorflow/core/framework/op_kernel.h>
 #include <vector>
 #include <algorithm>
-#include <math>
+//#include <math>
 
 using namespace tensorflow;
 
@@ -37,7 +37,7 @@ public:
         TensorShape tmp_shape; // default 0 dims
         OP_REQUIRES_OK(context, context->allocate_output(0, tmp_shape, &output_tensor));
 
-        auto output_flat = output_tensor->flat<float>; // only one element
+        auto output_flat = output_tensor->flat<float>(); // only one element
 
         int blank_ix = input2.shape().dim_size(1)-1; // shape[-1]-1
         int n_vocab{blank_ix+1};
