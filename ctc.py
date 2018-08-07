@@ -374,16 +374,19 @@ def compare(phrase):
     ctcloss = tf.nn.ctc_loss(st,logits,np.array([frame]))
     # ctc2 = -np.log(ctc(phrase,logits))
     ctc3, myctc1 = ctc_loss(phrase,logits)
+    with tf.Session():
+        ctc1 = ctcloss.eval()
     #====================================================================#
     import os
     myctc_module = tf.load_op_library(os.path.join('myctc', 'myctc.so'))
     logits_input = logits[:,0,:]
     phrase_input = np.array([ord(x.lower())-ord('a') for x in phrase])
-    myctc_op = myctc_module.Myctc(phrase_input, logits_input)
+    with tf.device('/cpu:0'):
+        myctc_op = myctc_module.Myctc(phrase_input, logits_input)
+        with tf.Session():
+            myctc2 = myctc_op.eval()
     #====================================================================#
-    with tf.Session():
-        ctc1 = ctcloss.eval()
-        myctc2 = myctc_op.eval()
+
     return ctc1, ctc3, myctc1, myctc2
 
 print((compare('example')))
