@@ -319,15 +319,17 @@ def gather_nd(params, indices, shape):
 
 def ctc_label_dense_to_sparse(labels, label_lengths, batch_size):
     # The second dimension of labels must be equal to the longest label length in the batch
-    correct_shape_assert = tf.assert_equal(tf.shape(labels)[1], tf.reduce_max(label_lengths))
-    with tf.control_dependencies([correct_shape_assert]):
-        labels = tf.identity(labels)
 
-    label_shape = tf.shape(labels)
+    label_shape = tf.cast(tf.shape(labels), tf.int64)
+    correct_shape_assert = tf.assert_equal(label_shape[1], tf.reduce_max(label_lengths)) # int32 vs int64
+    with tf.control_dependencies([correct_shape_assert]):
+        labels = tf.cast(tf.identity(labels), tf.int32)
+
+
     num_batches_tns = tf.stack([label_shape[0]])
     max_num_labels_tns = tf.stack([label_shape[1]])
     def range_less_than(previous_state, current_input):
-        return tf.expand_dims(tf.range(label_shape[1]), 0) < current_input
+        return tf.expand_dims(tf.range(label_shape[1]), 0) < current_input # int32 vs int64
 
     init = tf.cast(tf.fill(max_num_labels_tns, 0), tf.bool)
     init = tf.expand_dims(init, 0)
@@ -343,9 +345,9 @@ def ctc_label_dense_to_sparse(labels, label_lengths, batch_size):
 
     indices = tf.transpose(tf.reshape(tf.concat([batch_ind, label_ind], 0), [2, -1]))
     shape = [batch_size, tf.reduce_max(label_lengths)]
-    vals_sparse = gather_nd(labels, indices, shape)
+    vals_sparse = gather_nd(labels, indices, shape) # labels should be of int32
 
-    return tf.SparseTensor(tf.to_int64(indices), vals_sparse, tf.to_int64(label_shape))
+    return tf.SparseTensor(tf.to_int64(indices), vals_sparse, tf.to_int64(label_shape)) # sparseTensor.values should be of int32
 
 def get_logits(frame,b,n_vocab):
     np.random.seed(0)
@@ -371,14 +373,14 @@ def compare(phrase):
     n_vocab = 27
     logits = get_logits(frame,b,n_vocab)
     st = get_sparse_target(phrase,b)
-    ctcloss = tf.nn.ctc_loss(st,logits,np.array([frame]))
+    ctcloss = tf.nn.ctc_loss(st,logits,np.array([frame], dtype=np.int64))  # st should be of dtype int64
     # ctc2 = -np.log(ctc(phrase,logits))
     ctc3, myctc1 = ctc_loss(phrase,logits)
     with tf.Session():
         ctc1 = ctcloss.eval()
     #====================================================================#
     import os
-    myctc_module = tf.load_op_library(os.path.join('myctc', 'myctc.so'))
+    myctc_module = tf.load_op_library(r'/usr/whz/audio_attack/myctc/myctc.so')
     logits_input = logits[:,0,:]
     phrase_input = np.array([ord(x.lower())-ord('a') for x in phrase])
     with tf.device('/cpu:0'):
