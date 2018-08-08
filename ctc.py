@@ -367,6 +367,14 @@ def get_sparse_target(phrase,b):
     
     return sparse_target
 
+class ZeroOutTest(tf.test.TestCase):
+  def testZeroOut(self):
+    zero_out_module = tf.load_op_library('./zero_out.so')
+    with self.test_session():
+      result = zero_out_module.zero_out([5, 4, 3, 2, 1])
+      self.assertAllEqual(result.eval(), [5, 0, 0, 0, 0])
+
+
 def compare(phrase):
     frame = 10
     b = 1
@@ -391,4 +399,6 @@ def compare(phrase):
 
     return ctc1, ctc3, myctc1, myctc2
 
-print((compare('example')))
+if __name__ == '__main__':
+    # print((compare('example')))
+    tf.test.main()
