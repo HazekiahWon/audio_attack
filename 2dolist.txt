@@ -24,3 +24,12 @@ the lower number the higher priority
 1	官方说明https://www.tensorflow.org/extend/adding_an_op
 	另一个教程https://davidstutz.de/implementing-tensorflow-operations-in-c-including-gradients/
 	都试过样例，都没有成功，第一个报错和第二个还不一样，第二个是cmake编译
+===== 0810 =====
+1   重装了tensorflow后可以正常编译运行了，但是我写的代码运行不了
+    顺藤摸瓜找到了
+    =1= https://github.com/tensorflow/tensorflow/blob/814f9ccd9b34a828f93d33eee6265e0cac07095a/tensorflow/core/kernels/ctc_loss_op.cc
+    这是编译ctc_loss的cc
+    =2= 相关的源码
+    https://github.com/tensorflow/tensorflow/blob/754048a0453a04a761e112ae5d99c149eb9910dd/tensorflow/core/util/ctc/ctc_loss_calculator.cc
+    和ctc_loss_calculator.h
+    所以我打算就着源码去改

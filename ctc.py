@@ -367,35 +367,27 @@ def get_sparse_target(phrase,b):
     
     return sparse_target
 
-class ZeroOutTest(tf.test.TestCase):
-  def testZeroOut(self):
-    zero_out_module = tf.load_op_library('./zero_out.so')
-    with self.test_session():
-      result = zero_out_module.zero_out([5, 4, 3, 2, 1])
-      self.assertAllEqual(result.eval(), [5, 0, 0, 0, 0])
-
-
 def compare(phrase):
     frame = 10
     b = 1
     n_vocab = 27
-    logits = get_logits(frame,b,n_vocab)
-    st = get_sparse_target(phrase,b)
-    ctcloss = tf.nn.ctc_loss(st,logits,np.array([frame], dtype=np.int64))  # st should be of dtype int64
-    # ctc2 = -np.log(ctc(phrase,logits))
-    ctc3, myctc1 = ctc_loss(phrase,logits)
     with tf.Session():
+        logits = get_logits(frame,b,n_vocab)
+        st = get_sparse_target(phrase,b)
+        ctcloss = tf.nn.ctc_loss(st,logits,np.array([frame], dtype=np.int64))  # st should be of dtype int64
+        # ctc2 = -np.log(ctc(phrase,logits))
+        ctc3, myctc1 = ctc_loss(phrase,logits)
+
         ctc1 = ctcloss.eval()
-    #====================================================================#
-    import os
-    myctc_module = tf.load_op_library(r'/usr/whz/audio_attack/myctc/myctc.so')
-    logits_input = logits[:,0,:]
-    phrase_input = np.array([ord(x.lower())-ord('a') for x in phrase])
-    with tf.device('/cpu:0'):
-        myctc_op = myctc_module.Myctc(phrase_input, logits_input)
-        with tf.Session():
+        #====================================================================#
+        import os
+        myctc_module = tf.load_op_library(r'/usr/whz/audio_attack/myctc/myctc.so')
+        logits_input = logits[:,0,:]
+        phrase_input = np.array([ord(x.lower())-ord('a') for x in phrase])
+        with tf.device('/cpu:0'):
+            myctc_op = myctc_module.myctc(phrase_input, logits_input)
             myctc2 = myctc_op.eval()
-    #====================================================================#
+        #====================================================================#
 
     return ctc1, ctc3, myctc1, myctc2
 
