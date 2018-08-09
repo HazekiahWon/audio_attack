@@ -1,0 +1,26 @@
+the lower number the higher priority
+1 在服务器上把[官方文档](site)上的zero_out op编译和测试出来
+	site=https://www.tensorflow.org/extend/adding_an_op
+	我试过自己写的myctc op编译成功，但是测试会报错undefined symbol
+	为了排除是自己代码问题还是编译方式问题，我编译了样例zero_out op，测试报了一样的错
+	代码在/usr/whz/audio_attack/myctc，build.sh是编译的几条指令
+	
+	
+2 去看[论文](ref)，先看懂梯度怎么求的，然后弄清楚myctc改了什么地方，实现新的梯度
+	ref=Connectionist Temporal Classification: Labeling Unsegmented Sequence Data with Recurrent Neural Networks
+	已经实现的代码在https://github.com/HazekiahWon/audio_attack.git的ctc.py，ctc_loss()是在别人的python实现上做的改动，已经包含原梯度实现
+	访问repo前首先接受邀请https://github.com/HazekiahWon/audio_attack/invitations
+	梯度实现建议先写python，再按照pythoncode，根据官方文档的规则写gradient的cppcode
+	
+3 去看(audio_attack),(cyclegan),(speech enhancement gan),后两者主要是代码,先做各自的运行，再一点点整合
+	希望把cyclegan的两个G换成segan的主体，因为segan是waveform到waveform
+	audio_attack的方法及myctc的改进作为生成训练数据的方法。
+	现在是作为unsupervised用unpaired data，如果发现不work会改成supervised，那么就把pix2pix替换cyclegan
+	
+4 针对audio_attack中选择的target_model=DeepSpeech，写代码实现：给定一个clean example，去画decision boundary
+	这个想法不完整。想要参考一下对rnn的interpretability或者geometry的论文是怎么做的
+	和cnn不一样，rnn是时间序列，在每个时间点都做分类，那么要怎么研究geometry
+=====================================================================================
+1	官方说明https://www.tensorflow.org/extend/adding_an_op
+	另一个教程https://davidstutz.de/implementing-tensorflow-operations-in-c-including-gradients/
+	都试过样例，都没有成功，第一个报错和第二个还不一样，第二个是cmake编译
