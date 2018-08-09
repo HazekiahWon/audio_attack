@@ -1,0 +1,6 @@
+myctc/.idea
+myctc/cmake-build-debug
+*.txt
+*.png
+DeepSpeech
+*.bak
