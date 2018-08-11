@@ -33,3 +33,82 @@ the lower number the higher priority
     https://github.com/tensorflow/tensorflow/blob/754048a0453a04a761e112ae5d99c149eb9910dd/tensorflow/core/util/ctc/ctc_loss_calculator.cc
     和ctc_loss_calculator.h
     所以我打算就着源码去改
+===== 0811 =====
+0 修改意见
+===== A ======
+	1. define context C in detail (line125 to first para. of sec.3 )
+	2. definition for functions such as mask, fusion, temporal_fusion 
+	>> this is to know how the attention is computed
+	at least high level intuitions are required
+	3. lack of dimensionality specific in the model (suggesting the graph is needed)
+	4. typo : line 122 and line 120 C'; line 206; line 236; line 256 dtm_datn
+	5. abbrv. specified at first use
+	6. test set, we should notify that this is the standard testing test used in all relevant work
+	>> the review suggest that we provide results in larger dataset
+	7. descriptions and reference for prev. state-of-art models
+	8. sampling scheme's descriptions are missing
+===== B =====
+	1. more justification for proposed network design
+	>> c.f. simple feedforward (because ours is recurrent)
+	2. more explanations on attention module and justification (quantitative), like:
+	replace attention module with standard denseblock
+	3. table3 references to prior work
+	4. context frames
+===== C =====
+	1. attention module's effect on mis-aligned contexts due to large motions
+	>> motion compensation deals with large motion
+	2. show changes of acc by changing #context frames
+==> prove convergence?
+organization of current paper:
+===== 3 =====
+	1. the task, with annotations (generated y, x, c, h, w, r)
+	== 3.1 ==
+	1. three-agent high-level respective functions
+	2. minimax(typo??) game formulation
+	3. underscore the function of Datn, point out the core problem, introduce a bit intuition
+	== 3.1.1 Generator ==
+	1. formulate as seq2seq with encoder-decoder structure. G's input and output
+	2. the pipeline : encoder, attention, decoder functions
+	>> here we have mentioned the computational graph
+	**A3** dimensionality
+	3. encoder : formular, interior stucture (components), usage (for current and contexts)
+	4. attention : motivation (temporal corr.)
+	>> visual attention mask : functions and intuitions, formulas
+	**A2** formulas for mask,fusion
+	**A8** here we mentioned in the last paragragh, we use periodical sampling
+	5. decoder : representation learning + neighboring fusion + upscling
+	**A2** formula for temporal_fusion
+	>> sell ideas about temporal fusion
+	== 3.1.2 Temporal Dis ==
+	12. mention the temporal profile preprocessing
+	last. justify that do not accept cinput
+	== 3.1.3 Atn Dis ==
+	1. functions, input, output,
+	2. typo of reference 3.1.3(should be 3.3), talking about where comes the samples
+	== 3.2 loss ==
+	Dt : jsd loss
+	Datn : intuitions of the interactions between Dt and Datn
+	G : two loss term
+	== 3.3 traning scheme ==
+	brief restatement of the alg
+	**A8**
+===== 4 experiments ======
+	1. dataset
+	2. traning related
+	3. arbitrary structure mentioning, introduce our specific design
+	4. ?? **A5** all abbrv. specified at first
+	== 4.1 ablation ==
+	1. benchmark dataset??
+	**A6** we need to show that the test set is used in all prior work and thus an acknowledged one.
+	2. neighboring fusion
+	3. attention
+	4. adv.
+	5. Dt
+	== 4.2 comparison ==
+	1. some conventions
+	**A7** references for prior work are forgotten
+	**A4** in the text, we forget to modify that dtm_datn to datn_dt
+	== 5 conclusion ==
+	
+	
+	
