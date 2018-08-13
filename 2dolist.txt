@@ -60,6 +60,7 @@ the lower number the higher priority
 	2. show changes of acc by changing #context frames
 ==> prove convergence?
 organization of current paper:
+
 ===== 3 =====
 	1. the task, with annotations (generated y, x, c, h, w, r)
 	== 3.1 ==
@@ -111,4 +112,23 @@ organization of current paper:
 	== 5 conclusion ==
 	
 	
-	
+===== 0813 ======
+已经改了一些typo
+修改意见
+3
+可能还要写清楚context是在同一个video里面非input x之外的frame
+3.1.1 
+有关G的dimensionality应该有张图
+attention那里，其实已经指出了和residual attention network类似的结构，但可能还需要把mask,fusion式子写出来
+关于attention的context是如何periodical sampling的可能要补充一下
+decoder那里，temporal_fusion的式子，其实这些fusion就是concat+1x1conv
+3.1.3
+提到样本从哪里来这个问题会进一步讨论，我粗看这个引用好像就是在3.3的alg.，不知道有没有问题
+4
+关于后文的缩写，不知道是不是要在这里先交代了
+4.1
+在dataset那里可能还要强调一下test set之所以只有四个是因为之前大家都用的是这四个，而且比较难
+4.2 
+不知道是不是在比较的同时还要提一下其他的模型
+==》 关于证明收敛，在考虑能不能用EM算法，以及之前何旭明说从game theory的角度
+==》 关于context 个数的实验
