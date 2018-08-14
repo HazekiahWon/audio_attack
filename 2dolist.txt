@@ -132,3 +132,12 @@ decoder那里，temporal_fusion的式子，其实这些fusion就是concat+1x1con
 不知道是不是在比较的同时还要提一下其他的模型
 ==》 关于证明收敛，在考虑能不能用EM算法，以及之前何旭明说从game theory的角度
 ==》 关于context 个数的实验
+
+==== 0814 tzw =====
+1->line 37 第一次出现contextual feature。contribution前文没提。 line 47 也一样。context-aware temporally...建议补充在introduction long-term部分。
+
+2-> line 70  由于context重要，所以这里需要补充细节的获取方法，而不是一笔带过
+
+3->line 120 和line 122 下标bug。以及这边的m,c可能需要在前面定义
+
+4->实验各种缩写定义。change number of context 的实验
